@@ -1,0 +1,11 @@
+export { UserRepository } from './user.repository';
+export { LeadRepository } from './lead.repository';
+export { RemarkRepository } from './remark.repository';
+export { FollowUpRepository } from './follow-up.repository';
+export { ActivityRepository } from './activity.repository';
+export { AttachmentRepository } from './attachment.repository';
+export { NotificationRepository } from './notification.repository';
+export { AuditLogRepository } from './audit-log.repository';
+export { TagRepository } from './tag.repository';
+export { ImportHistoryRepository } from './import-history.repository';
+export { ExportHistoryRepository } from './export-history.repository';

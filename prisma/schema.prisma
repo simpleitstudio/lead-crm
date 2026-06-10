@@ -1,0 +1,445 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
+
+enum UserRole {
+  ADMIN
+  SALES
+  LEAD_GENERATOR
+}
+
+enum LeadStatus {
+  NEW
+  ASSIGNED
+  CONTACTED
+  INTERESTED
+  FOLLOW_UP_REQUIRED
+  MEETING_SCHEDULED
+  DEMO_SCHEDULED
+  PROPOSAL_SENT
+  NEGOTIATION
+  WON
+  LOST
+  INVALID
+}
+
+enum LeadPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum LeadSource {
+  INSTAGRAM
+  LINKEDIN
+  GOOGLE_MAPS
+  AMAZON
+  FLIPKART
+  REFERRAL
+  WEBSITE_FORM
+  MANUAL_RESEARCH
+  OTHER
+}
+
+enum LostReason {
+  NO_BUDGET
+  NO_RESPONSE
+  NOT_INTERESTED
+  ALREADY_HAS_VENDOR
+  BAD_FIT
+  OTHER
+}
+
+enum FollowUpStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+enum ActionType {
+  LEAD_CREATED
+  LEAD_UPDATED
+  LEAD_ASSIGNED
+  LEAD_REASSIGNED
+  STATUS_CHANGED
+  REMARK_ADDED
+  REMARK_EDITED
+  REMARK_DELETED
+  FOLLOWUP_SCHEDULED
+  FOLLOWUP_COMPLETED
+  FOLLOWUP_CANCELLED
+  FILE_UPLOADED
+  FILE_DELETED
+  LEAD_WON
+  LEAD_LOST
+}
+
+enum NotificationType {
+  LEAD_ASSIGNED
+  FOLLOWUP_DUE
+  FOLLOWUP_OVERDUE
+  LEAD_REASSIGNED
+}
+
+enum AuditActionType {
+  USER_CREATED
+  USER_UPDATED
+  USER_DEACTIVATED
+  PASSWORD_RESET
+  LOGIN_SUCCESS
+  LOGIN_FAILED
+  LOGOUT
+  LEAD_CREATED
+  LEAD_UPDATED
+  LEAD_DELETED
+  LEAD_RESTORED
+  LEAD_ASSIGNED
+  LEAD_REASSIGNED
+  STATUS_CHANGED
+  REMARK_CREATED
+  REMARK_UPDATED
+  REMARK_DELETED
+  FOLLOWUP_CREATED
+  FOLLOWUP_COMPLETED
+  FOLLOWUP_CANCELLED
+  FILE_UPLOADED
+  FILE_DELETED
+  EXPORT_GENERATED
+  IMPORT_COMPLETED
+  TAG_CREATED
+  TAG_DELETED
+  SETTINGS_UPDATED
+}
+
+enum ImportStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+// ─────────────────────────────────────────────
+// MODELS
+// ─────────────────────────────────────────────
+
+model User {
+  id           String    @id @default(uuid()) @db.Uuid
+  email        String    @unique @db.VarChar(255)
+  passwordHash String    @map("password_hash") @db.VarChar(255)
+  firstName    String    @map("first_name") @db.VarChar(100)
+  lastName     String    @map("last_name") @db.VarChar(100)
+  role         UserRole  @default(SALES)
+  isActive     Boolean   @default(true) @map("is_active")
+  phone        String?   @db.VarChar(20)
+  avatarUrl    String?   @map("avatar_url") @db.VarChar(500)
+  lastLoginAt  DateTime? @map("last_login_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+
+  // Relations
+  assignedLeads   Lead[]          @relation("AssignedTo")
+  createdLeads    Lead[]          @relation("CreatedBy")
+  updatedLeads    Lead[]          @relation("UpdatedBy")
+  deletedLeads    Lead[]          @relation("DeletedBy")
+  remarks         Remark[]        @relation("RemarkAuthor")
+  deletedRemarks  Remark[]        @relation("RemarkDeletedBy")
+  assignedFollowUps FollowUp[]    @relation("FollowUpAssignedTo")
+  createdFollowUps  FollowUp[]    @relation("FollowUpCreatedBy")
+  activities      Activity[]
+  attachments     Attachment[]    @relation("AttachmentUploadedBy")
+  deletedAttachments Attachment[] @relation("AttachmentDeletedBy")
+  notifications   Notification[]
+  auditLogs       AuditLog[]
+  importHistories ImportHistory[]
+  exportHistories ExportHistory[]
+
+  @@index([email])
+  @@index([role])
+  @@index([isActive])
+  @@index([deletedAt])
+  @@map("users")
+}
+
+model Lead {
+  id                    String       @id @default(uuid()) @db.Uuid
+  companyName           String       @map("company_name") @db.VarChar(255)
+  contactPerson         String       @map("contact_person") @db.VarChar(255)
+  designation           String?      @db.VarChar(150)
+  email                 String?      @db.VarChar(255)
+  phone                 String?      @db.VarChar(20)
+  alternatePhone        String?      @map("alternate_phone") @db.VarChar(20)
+  website               String?      @db.VarChar(500)
+  linkedinUrl           String?      @map("linkedin_url") @db.VarChar(500)
+  instagramUrl          String?      @map("instagram_url") @db.VarChar(500)
+
+  // Business Info
+  industry              String?      @db.VarChar(150)
+  businessCategory      String?      @map("business_category") @db.VarChar(150)
+  employeeCount         String?      @map("employee_count") @db.VarChar(50)
+  estimatedRevenue      String?      @map("estimated_revenue") @db.VarChar(100)
+  existingSoftwareStack String?      @map("existing_software_stack") @db.Text
+
+  // Location
+  city                  String?      @db.VarChar(100)
+  state                 String?      @db.VarChar(100)
+  country               String?      @db.VarChar(100)
+
+  // Lead Info
+  source                LeadSource   @default(OTHER)
+  priority              LeadPriority @default(MEDIUM)
+  status                LeadStatus   @default(NEW)
+  lostReason            LostReason?  @map("lost_reason")
+  lostReasonNote        String?      @map("lost_reason_note") @db.Text
+
+  // Assignment
+  assignedToId          String?      @map("assigned_to_id") @db.Uuid
+  assignedTo            User?        @relation("AssignedTo", fields: [assignedToId], references: [id])
+  assignedAt            DateTime?    @map("assigned_at")
+
+  // Ownership
+  createdById           String       @map("created_by_id") @db.Uuid
+  createdBy             User         @relation("CreatedBy", fields: [createdById], references: [id])
+  updatedById           String?      @map("updated_by_id") @db.Uuid
+  updatedBy             User?        @relation("UpdatedBy", fields: [updatedById], references: [id])
+
+  // Timestamps
+  createdAt             DateTime     @default(now()) @map("created_at")
+  updatedAt             DateTime     @updatedAt @map("updated_at")
+
+  // Soft Delete
+  deletedAt             DateTime?    @map("deleted_at")
+  deletedById           String?      @map("deleted_by_id") @db.Uuid
+  deletedBy             User?        @relation("DeletedBy", fields: [deletedById], references: [id])
+
+  // Relations
+  remarks               Remark[]
+  followUps             FollowUp[]
+  activities            Activity[]
+  attachments           Attachment[]
+  leadTags              LeadTag[]
+
+  @@index([email])
+  @@index([phone])
+  @@index([website])
+  @@index([status])
+  @@index([priority])
+  @@index([source])
+  @@index([assignedToId])
+  @@index([createdById])
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@index([companyName])
+  @@index([contactPerson])
+  @@index([country])
+  @@index([industry])
+  // Composite indexes for common query patterns
+  @@index([status, assignedToId])
+  @@index([status, priority])
+  @@index([deletedAt, status])
+  @@index([assignedToId, deletedAt])
+  @@map("leads")
+}
+
+model Remark {
+  id          String    @id @default(uuid()) @db.Uuid
+  leadId      String    @map("lead_id") @db.Uuid
+  lead        Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  authorId    String    @map("author_id") @db.Uuid
+  author      User      @relation("RemarkAuthor", fields: [authorId], references: [id])
+  content     String    @db.Text
+  contentHtml String?   @map("content_html") @db.Text
+  isEdited    Boolean   @default(false) @map("is_edited")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+  deletedById String?   @map("deleted_by_id") @db.Uuid
+  deletedBy   User?     @relation("RemarkDeletedBy", fields: [deletedById], references: [id])
+
+  @@index([leadId])
+  @@index([authorId])
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@map("remarks")
+}
+
+model FollowUp {
+  id             String         @id @default(uuid()) @db.Uuid
+  leadId         String         @map("lead_id") @db.Uuid
+  lead           Lead           @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  assignedToId   String         @map("assigned_to_id") @db.Uuid
+  assignedTo     User           @relation("FollowUpAssignedTo", fields: [assignedToId], references: [id])
+  createdById    String         @map("created_by_id") @db.Uuid
+  createdBy      User           @relation("FollowUpCreatedBy", fields: [createdById], references: [id])
+  scheduledAt    DateTime       @map("scheduled_at")
+  note           String?        @db.Text
+  status         FollowUpStatus @default(PENDING)
+  completedAt    DateTime?      @map("completed_at")
+  completionNote String?        @map("completion_note") @db.Text
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+
+  @@index([leadId])
+  @@index([assignedToId])
+  @@index([scheduledAt])
+  @@index([status])
+  @@index([status, assignedToId])
+  @@index([status, scheduledAt])
+  @@map("follow_ups")
+}
+
+model Activity {
+  id          String     @id @default(uuid()) @db.Uuid
+  leadId      String     @map("lead_id") @db.Uuid
+  lead        Lead       @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  userId      String     @map("user_id") @db.Uuid
+  user        User       @relation(fields: [userId], references: [id])
+  actionType  ActionType @map("action_type")
+  description String     @db.Text
+  metadata    Json?      @db.JsonB
+  createdAt   DateTime   @default(now()) @map("created_at")
+
+  @@index([leadId])
+  @@index([userId])
+  @@index([actionType])
+  @@index([createdAt])
+  @@index([leadId, createdAt])
+  @@map("activities")
+}
+
+model Attachment {
+  id           String    @id @default(uuid()) @db.Uuid
+  leadId       String    @map("lead_id") @db.Uuid
+  lead         Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  uploadedById String    @map("uploaded_by_id") @db.Uuid
+  uploadedBy   User      @relation("AttachmentUploadedBy", fields: [uploadedById], references: [id])
+  fileName     String    @map("file_name") @db.VarChar(255)
+  fileType     String    @map("file_type") @db.VarChar(50)
+  fileSize     Int       @map("file_size")
+  filePath     String    @map("file_path") @db.VarChar(500)
+  mimeType     String    @map("mime_type") @db.VarChar(100)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  deletedAt    DateTime? @map("deleted_at")
+  deletedById  String?   @map("deleted_by_id") @db.Uuid
+  deletedBy    User?     @relation("AttachmentDeletedBy", fields: [deletedById], references: [id])
+
+  @@index([leadId])
+  @@index([uploadedById])
+  @@index([deletedAt])
+  @@map("attachments")
+}
+
+model Notification {
+  id            String           @id @default(uuid()) @db.Uuid
+  userId        String           @map("user_id") @db.Uuid
+  user          User             @relation(fields: [userId], references: [id])
+  type          NotificationType
+  title         String           @db.VarChar(255)
+  message       String           @db.Text
+  referenceId   String?          @map("reference_id") @db.Uuid
+  referenceType String?          @map("reference_type") @db.VarChar(50)
+  isRead        Boolean          @default(false) @map("is_read")
+  readAt        DateTime?        @map("read_at")
+  createdAt     DateTime         @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([userId, isRead])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id            String          @id @default(uuid()) @db.Uuid
+  userId        String?         @map("user_id") @db.Uuid
+  user          User?           @relation(fields: [userId], references: [id])
+  userName      String          @map("user_name") @db.VarChar(255)
+  userRole      UserRole        @map("user_role")
+  ipAddress     String?         @map("ip_address") @db.VarChar(45)
+  userAgent     String?         @map("user_agent") @db.Text
+  actionType    AuditActionType @map("action_type")
+  entityType    String          @map("entity_type") @db.VarChar(50)
+  entityId      String?         @map("entity_id") @db.Uuid
+  previousValue Json?           @map("previous_value") @db.JsonB
+  newValue      Json?           @map("new_value") @db.JsonB
+  createdAt     DateTime        @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([actionType])
+  @@index([entityType])
+  @@index([entityId])
+  @@index([createdAt])
+  @@index([userId, createdAt])
+  @@index([entityType, entityId])
+  @@map("audit_logs")
+}
+
+model Tag {
+  id        String    @id @default(uuid()) @db.Uuid
+  name      String    @unique @db.VarChar(50)
+  color     String    @default("#6366f1") @db.VarChar(7)
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  leadTags  LeadTag[]
+
+  @@map("tags")
+}
+
+model LeadTag {
+  id        String   @id @default(uuid()) @db.Uuid
+  leadId    String   @map("lead_id") @db.Uuid
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  tagId     String   @map("tag_id") @db.Uuid
+  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([leadId, tagId])
+  @@index([leadId])
+  @@index([tagId])
+  @@map("lead_tags")
+}
+
+model ImportHistory {
+  id             String       @id @default(uuid()) @db.Uuid
+  userId         String       @map("user_id") @db.Uuid
+  user           User         @relation(fields: [userId], references: [id])
+  fileName       String       @map("file_name") @db.VarChar(255)
+  totalRows      Int          @default(0) @map("total_rows")
+  successCount   Int          @default(0) @map("success_count")
+  failureCount   Int          @default(0) @map("failure_count")
+  duplicateCount Int          @default(0) @map("duplicate_count")
+  errorReport    Json?        @map("error_report") @db.JsonB
+  status         ImportStatus @default(PENDING)
+  startedAt      DateTime?    @map("started_at")
+  completedAt    DateTime?    @map("completed_at")
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("import_histories")
+}
+
+model ExportHistory {
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  user           User     @relation(fields: [userId], references: [id])
+  fileName       String   @map("file_name") @db.VarChar(255)
+  fileType       String   @map("file_type") @db.VarChar(10)
+  recordCount    Int      @default(0) @map("record_count")
+  appliedFilters Json?    @map("applied_filters") @db.JsonB
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("export_histories")
+}
