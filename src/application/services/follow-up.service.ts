@@ -7,7 +7,7 @@ import { FollowUpEntity } from '../../domain/entities/follow-up.entity';
 import { FollowUpStatus } from '../../domain/enums/follow-up-status.enum';
 import { UserRole } from '../../domain/enums/user-role.enum';
 import { ActionType } from '../../domain/enums/action-type.enum';
-import { NotificationType } from '../../domain/enums/notification-type.enum';
+import { NotificationPriority } from '../../domain/enums/notification-priority.enum';
 import { ForbiddenException } from '../../domain/exceptions/forbidden.exception';
 import { NotFoundException } from '../../domain/exceptions/not-found.exception';
 import { PaginatedResult, PaginationVo } from '../../domain/value-objects/pagination.vo';
@@ -54,12 +54,12 @@ export class FollowUpService implements IFollowUpService {
 
     if (assignedToId !== performerId) {
       await this.notificationRepository.create({
-        userId: assignedToId,
-        type: NotificationType.FOLLOWUP_DUE,
         title: 'New Follow-up Scheduled',
         message: `A follow-up was scheduled for lead "${lead.companyName}" on ${new Date(scheduledAt).toLocaleString()}`,
-        referenceId: followUp.id,
-        referenceType: 'FollowUp',
+        priority: NotificationPriority.INFO,
+        recipientId: assignedToId,
+        isGlobal: false,
+        createdById: performerId,
       });
     }
 

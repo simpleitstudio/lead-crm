@@ -60,8 +60,9 @@ export class ExportService implements IExportService {
     const headers = [
       'ID', 'Company Name', 'Contact Person', 'Designation', 'Email', 'Phone',
       'Alternate Phone', 'Website', 'Linkedin URL', 'Instagram URL', 'Industry',
-      'Business Category', 'Employee Count', 'Estimated Revenue', 'Existing Software Stack',
-      'City', 'State', 'Country', 'Source', 'Priority', 'Status', 'Created At'
+      'Business Category', 'Services Interested In', 'Current Business Problem', 'Estimated Budget',
+      'Internal Notes', 'Preferred Contact Platform', 'Custom Contact Platform',
+      'Existing Software Stack', 'City', 'State', 'Country', 'Source', 'Priority', 'Status', 'Created At'
     ];
 
     const escapeCSV = (val: any) => {
@@ -88,8 +89,12 @@ export class ExportService implements IExportService {
         item.instagramUrl,
         item.industry,
         item.businessCategory,
-        item.employeeCount,
-        item.estimatedRevenue,
+        item.servicesInterestedIn,
+        item.currentBusinessProblem,
+        item.estimatedBudget,
+        item.internalNotes,
+        item.preferredContactPlatform,
+        item.customContactPlatform,
         item.existingSoftwareStack,
         item.city,
         item.state,

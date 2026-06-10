@@ -1,14 +1,14 @@
 import { NotificationEntity } from '../../entities';
-import { NotificationType } from '../../enums';
+import { NotificationPriority } from '../../enums';
 import { PaginatedResult, PaginationVo } from '../../value-objects';
 
 export interface CreateNotificationData {
-  userId: string;
-  type: NotificationType;
   title: string;
   message: string;
-  referenceId?: string;
-  referenceType?: string;
+  priority: NotificationPriority;
+  recipientId?: string | null;
+  isGlobal?: boolean;
+  createdById: string;
 }
 
 export interface INotificationRepository {

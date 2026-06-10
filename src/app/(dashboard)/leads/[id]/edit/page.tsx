@@ -23,9 +23,13 @@ export default function EditLeadPage() {
   const [instagramUrl, setInstagramUrl] = useState('');
   const [industry, setIndustry] = useState('');
   const [businessCategory, setBusinessCategory] = useState('');
-  const [employeeCount, setEmployeeCount] = useState('');
-  const [estimatedRevenue, setEstimatedRevenue] = useState('');
   const [existingSoftwareStack, setExistingSoftwareStack] = useState('');
+  const [servicesInterestedIn, setServicesInterestedIn] = useState('');
+  const [currentBusinessProblem, setCurrentBusinessProblem] = useState('');
+  const [estimatedBudget, setEstimatedBudget] = useState('');
+  const [internalNotes, setInternalNotes] = useState('');
+  const [preferredContactPlatform, setPreferredContactPlatform] = useState('');
+  const [customContactPlatform, setCustomContactPlatform] = useState('');
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
@@ -63,9 +67,13 @@ export default function EditLeadPage() {
         setInstagramUrl(data.instagramUrl || '');
         setIndustry(data.industry || '');
         setBusinessCategory(data.businessCategory || '');
-        setEmployeeCount(data.employeeCount || '');
-        setEstimatedRevenue(data.estimatedRevenue || '');
         setExistingSoftwareStack(data.existingSoftwareStack || '');
+        setServicesInterestedIn(data.servicesInterestedIn || '');
+        setCurrentBusinessProblem(data.currentBusinessProblem || '');
+        setEstimatedBudget(data.estimatedBudget || '');
+        setInternalNotes(data.internalNotes || '');
+        setPreferredContactPlatform(data.preferredContactPlatform || '');
+        setCustomContactPlatform(data.customContactPlatform || '');
         setCity(data.city || '');
         setState(data.state || '');
         setCountry(data.country || '');
@@ -120,9 +128,13 @@ export default function EditLeadPage() {
         instagramUrl: instagramUrl || null,
         industry: industry || null,
         businessCategory: businessCategory || null,
-        employeeCount: employeeCount || null,
-        estimatedRevenue: estimatedRevenue || null,
         existingSoftwareStack: existingSoftwareStack || null,
+        servicesInterestedIn: servicesInterestedIn || null,
+        currentBusinessProblem: currentBusinessProblem || null,
+        estimatedBudget: estimatedBudget || null,
+        internalNotes: user?.role !== 'LEAD_GENERATOR' ? (internalNotes || null) : null,
+        preferredContactPlatform: preferredContactPlatform || null,
+        customContactPlatform: preferredContactPlatform === 'Other' ? (customContactPlatform || null) : null,
         city: city || null,
         state: state || null,
         country: country || null,
@@ -155,7 +167,7 @@ export default function EditLeadPage() {
 
   if (loading) {
     return (
-      <div className="space-y-6 max-w-4xl mx-auto animate-pulse">
+      <div className="space-y-6 max-w-[1400px] w-full mx-auto px-4 animate-pulse">
         <div className="h-6 w-32 bg-slate-800 rounded-lg"></div>
         <div className="h-10 w-48 bg-slate-800 rounded-lg"></div>
         <div className="h-96 bg-slate-900/60 rounded-3xl"></div>
@@ -164,7 +176,7 @@ export default function EditLeadPage() {
   }
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-[1400px] w-full mx-auto px-4">
       <div>
         <Link href={`/leads/${id}`} className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors">
           <ArrowLeft className="h-4 w-4" />
@@ -256,6 +268,40 @@ export default function EditLeadPage() {
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all"
               />
             </div>
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                Preferred Communication Platform
+              </label>
+              <select
+                value={preferredContactPlatform}
+                onChange={(e) => setPreferredContactPlatform(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all cursor-pointer"
+              >
+                <option value="">Select Platform</option>
+                <option value="Phone">Phone</option>
+                <option value="Email">Email</option>
+                <option value="Instagram">Instagram</option>
+                <option value="Twitter">Twitter</option>
+                <option value="Telegram">Telegram</option>
+                <option value="Discord">Discord</option>
+                <option value="LinkedIn">LinkedIn</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            {preferredContactPlatform === 'Other' && (
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                  Custom Platform
+                </label>
+                <input
+                  type="text"
+                  value={customContactPlatform}
+                  onChange={(e) => setCustomContactPlatform(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all"
+                  placeholder="e.g. Facebook, Slack, Signal"
+                />
+              </div>
+            )}
           </div>
         </div>
 
@@ -325,28 +371,6 @@ export default function EditLeadPage() {
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all"
               />
             </div>
-            <div>
-              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
-                Employee Count
-              </label>
-              <input
-                type="text"
-                value={employeeCount}
-                onChange={(e) => setEmployeeCount(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all"
-              />
-            </div>
-            <div>
-              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
-                Estimated Revenue
-              </label>
-              <input
-                type="text"
-                value={estimatedRevenue}
-                onChange={(e) => setEstimatedRevenue(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all"
-              />
-            </div>
             <div className="md:col-span-2">
               <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
                 Existing Software Stack
@@ -357,6 +381,52 @@ export default function EditLeadPage() {
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all h-20 resize-none"
               />
             </div>
+            <div className="md:col-span-2">
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                Services Interested In
+              </label>
+              <textarea
+                value={servicesInterestedIn}
+                onChange={(e) => setServicesInterestedIn(e.target.value)}
+                maxLength={500}
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all h-20 resize-none"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                Current Business Problem
+              </label>
+              <textarea
+                value={currentBusinessProblem}
+                onChange={(e) => setCurrentBusinessProblem(e.target.value)}
+                maxLength={2000}
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all h-24 resize-none"
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                Estimated Budget
+              </label>
+              <input
+                type="text"
+                value={estimatedBudget}
+                onChange={(e) => setEstimatedBudget(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all"
+                placeholder="50k, 1L, 2L-5L, Unknown"
+              />
+            </div>
+            {user?.role !== 'LEAD_GENERATOR' && (
+              <div className="md:col-span-2">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                  Internal Notes
+                </label>
+                <textarea
+                  value={internalNotes}
+                  onChange={(e) => setInternalNotes(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all h-24 resize-none"
+                />
+              </div>
+            )}
           </div>
         </div>
 
@@ -507,3 +577,4 @@ export default function EditLeadPage() {
     </div>
   );
 }
+

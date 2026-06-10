@@ -38,9 +38,13 @@ interface Lead {
   instagramUrl: string | null;
   industry: string | null;
   businessCategory: string | null;
-  employeeCount: string | null;
-  estimatedRevenue: string | null;
   existingSoftwareStack: string | null;
+  servicesInterestedIn: string | null;
+  currentBusinessProblem: string | null;
+  estimatedBudget: string | null;
+  internalNotes: string | null;
+  preferredContactPlatform: string | null;
+  customContactPlatform: string | null;
   city: string | null;
   state: string | null;
   country: string | null;
@@ -504,6 +508,14 @@ export default function LeadDetailPage() {
                 <span className="font-semibold text-slate-200">{lead.alternatePhone || 'N/A'}</span>
               </div>
               <div className="flex justify-between border-b border-slate-800/40 pb-2.5">
+                <span className="text-slate-400">Preferred Platform</span>
+                <span className="font-semibold text-slate-200">
+                  {lead.preferredContactPlatform === 'Other'
+                    ? `Other (${lead.customContactPlatform || 'N/A'})`
+                    : (lead.preferredContactPlatform || 'N/A')}
+                </span>
+              </div>
+              <div className="flex justify-between border-b border-slate-800/40 pb-2.5">
                 <span className="text-slate-400">Industry</span>
                 <span className="font-semibold text-slate-200">{lead.industry || 'N/A'}</span>
               </div>
@@ -512,12 +524,8 @@ export default function LeadDetailPage() {
                 <span className="font-semibold text-slate-200">{lead.businessCategory || 'N/A'}</span>
               </div>
               <div className="flex justify-between border-b border-slate-800/40 pb-2.5">
-                <span className="text-slate-400">Employee Count</span>
-                <span className="font-semibold text-slate-200">{lead.employeeCount || 'N/A'}</span>
-              </div>
-              <div className="flex justify-between border-b border-slate-800/40 pb-2.5">
-                <span className="text-slate-400">Est. Revenue</span>
-                <span className="font-semibold text-slate-200">{lead.estimatedRevenue || 'N/A'}</span>
+                <span className="text-slate-400">Estimated Budget</span>
+                <span className="font-semibold text-slate-200">{lead.estimatedBudget || 'N/A'}</span>
               </div>
               <div className="flex justify-between border-b border-slate-800/40 pb-2.5">
                 <span className="text-slate-400">Source</span>
@@ -531,11 +539,32 @@ export default function LeadDetailPage() {
                 </span>
               </div>
               <div className="md:col-span-2 space-y-1.5 pt-2">
+                <span className="text-slate-400 block font-semibold text-indigo-400">Services Interested In</span>
+                <p className="p-3 bg-slate-900/60 rounded-xl border border-slate-800/80 text-xs text-slate-300 leading-relaxed min-h-[50px] whitespace-pre-wrap">
+                  {lead.servicesInterestedIn || 'No services interest specified.'}
+                </p>
+              </div>
+              <div className="md:col-span-2 space-y-1.5 pt-2">
+                <span className="text-slate-400 block font-semibold text-indigo-400">Current Business Problem</span>
+                <p className="p-3 bg-slate-900/60 rounded-xl border border-slate-800/80 text-xs text-slate-300 leading-relaxed min-h-[50px] whitespace-pre-wrap">
+                  {lead.currentBusinessProblem || 'No business problems recorded.'}
+                </p>
+              </div>
+              <div className="md:col-span-2 space-y-1.5 pt-2">
                 <span className="text-slate-400 block">Existing Software Stack</span>
-                <p className="p-3 bg-slate-900/60 rounded-xl border border-slate-800/80 font-mono text-[10px] text-slate-300 leading-relaxed min-h-[60px] whitespace-pre-wrap">
+                <p className="p-3 bg-slate-900/60 rounded-xl border border-slate-800/80 font-mono text-[10px] text-slate-300 leading-relaxed min-h-[50px] whitespace-pre-wrap">
                   {lead.existingSoftwareStack || 'No software stack notes recorded.'}
                 </p>
               </div>
+              {/* Only show internal notes for authorized roles (ADMIN and Sales rep assigned to the lead) */}
+              {(user?.role === 'ADMIN' || lead.assignedToId === user?.id) && (
+                <div className="md:col-span-2 space-y-1.5 pt-2">
+                  <span className="text-slate-400 block font-semibold text-amber-400">Internal Notes</span>
+                  <p className="p-3 bg-amber-950/20 rounded-xl border border-amber-900/30 text-xs text-slate-300 leading-relaxed min-h-[50px] whitespace-pre-wrap">
+                    {lead.internalNotes || 'No internal notes recorded.'}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Social Links */}

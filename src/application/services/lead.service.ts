@@ -9,7 +9,7 @@ import { UserRole } from '../../domain/enums/user-role.enum';
 import { LeadStatus } from '../../domain/enums/lead-status.enum';
 import { ActionType } from '../../domain/enums/action-type.enum';
 import { AuditActionType } from '../../domain/enums/audit-action-type.enum';
-import { NotificationType } from '../../domain/enums/notification-type.enum';
+import { NotificationPriority } from '../../domain/enums/notification-priority.enum';
 import { ForbiddenException } from '../../domain/exceptions/forbidden.exception';
 import { NotFoundException } from '../../domain/exceptions/not-found.exception';
 import { PaginatedResult, PaginationVo } from '../../domain/value-objects/pagination.vo';
@@ -99,6 +99,7 @@ export class LeadService implements ILeadService {
 
     const performer = await this.userRepository.findById(performerId);
     if (performer) {
+      // 1. Log overall LEAD_UPDATED action
       await this.auditLogRepository.create({
         userId: performerId,
         userName: performer.fullName,
@@ -109,6 +110,46 @@ export class LeadService implements ILeadService {
         previousValue: oldLead,
         newValue: JSON.parse(JSON.stringify(updated)),
       });
+
+      // 2. Log granular updates if specific fields changed
+      if (data.servicesInterestedIn !== undefined && data.servicesInterestedIn !== oldLead.servicesInterestedIn) {
+        await this.auditLogRepository.create({
+          userId: performerId,
+          userName: performer.fullName,
+          userRole: performer.role,
+          actionType: AuditActionType.SERVICE_INTEREST_UPDATED,
+          entityType: 'Lead',
+          entityId: lead.id,
+          previousValue: { servicesInterestedIn: oldLead.servicesInterestedIn },
+          newValue: { servicesInterestedIn: data.servicesInterestedIn },
+        });
+      }
+
+      if (data.estimatedBudget !== undefined && data.estimatedBudget !== oldLead.estimatedBudget) {
+        await this.auditLogRepository.create({
+          userId: performerId,
+          userName: performer.fullName,
+          userRole: performer.role,
+          actionType: AuditActionType.BUDGET_UPDATED,
+          entityType: 'Lead',
+          entityId: lead.id,
+          previousValue: { estimatedBudget: oldLead.estimatedBudget },
+          newValue: { estimatedBudget: data.estimatedBudget },
+        });
+      }
+
+      if (data.internalNotes !== undefined && data.internalNotes !== oldLead.internalNotes) {
+        await this.auditLogRepository.create({
+          userId: performerId,
+          userName: performer.fullName,
+          userRole: performer.role,
+          actionType: AuditActionType.INTERNAL_NOTES_UPDATED,
+          entityType: 'Lead',
+          entityId: lead.id,
+          previousValue: { internalNotes: oldLead.internalNotes },
+          newValue: { internalNotes: data.internalNotes },
+        });
+      }
     }
 
     return updated;
@@ -124,6 +165,11 @@ export class LeadService implements ILeadService {
       throw new ForbiddenException('You do not have permission to view this lead');
     }
 
+    // Strip internal notes if user is not ADMIN or the assigned salesperson
+    if (performerRole !== UserRole.ADMIN && lead.assignedToId !== performerId) {
+      lead.internalNotes = null;
+    }
+
     return lead;
   }
 
@@ -137,7 +183,16 @@ export class LeadService implements ILeadService {
       }
     }
 
-    return this.leadRepository.findAll(filtersCopy, pagination);
+    const result = await this.leadRepository.findAll(filtersCopy, pagination);
+
+    // Strip internal notes for non-authorized users (lead generators or unassigned sales reps)
+    result.data.forEach(lead => {
+      if (performerRole !== UserRole.ADMIN && lead.assignedToId !== performerId) {
+        lead.internalNotes = null;
+      }
+    });
+
+    return result;
   }
 
   public async assignLead(id: string, assignedToId: string | null, performerId: string, performerRole: UserRole): Promise<LeadEntity> {
@@ -191,12 +246,12 @@ export class LeadService implements ILeadService {
       const assignee = await this.userRepository.findById(assignedToId);
       if (assignee) {
         await this.notificationRepository.create({
-          userId: assignedToId,
-          type: NotificationType.LEAD_ASSIGNED,
           title: 'New Lead Assigned',
           message: `Lead "${lead.companyName}" has been assigned to you.`,
-          referenceId: lead.id,
-          referenceType: 'Lead',
+          priority: NotificationPriority.INFO,
+          recipientId: assignedToId,
+          isGlobal: false,
+          createdById: performerId,
         });
       }
     }
@@ -242,12 +297,13 @@ export class LeadService implements ILeadService {
     });
 
     await this.notificationRepository.create({
-      userId: assignedToId,
-      type: NotificationType.LEAD_ASSIGNED,
       title: 'New Lead Assigned',
       message: `Lead "${lead.companyName}" has been assigned to you.`,
-      referenceId: lead.id,
-      referenceType: 'Lead',
+      priority: NotificationPriority.INFO,
+      recipientId: assignedToId,
+      isGlobal: false,
+      createdById: performerId,
     });
   }
 }
+

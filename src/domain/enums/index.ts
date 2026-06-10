@@ -6,5 +6,6 @@ export { LostReason, LostReasonLabels } from './lost-reason.enum';
 export { ActionType, ActionTypeLabels } from './action-type.enum';
 export { AuditActionType, AuditActionTypeLabels } from './audit-action-type.enum';
 export { NotificationType, NotificationTypeLabels } from './notification-type.enum';
+export { NotificationPriority, NotificationPriorityLabels } from './notification-priority.enum';
 export { FollowUpStatus, FollowUpStatusLabels, FollowUpStatusColors } from './follow-up-status.enum';
 export { ImportStatus, ImportStatusLabels } from './import-status.enum';

@@ -55,7 +55,7 @@ class ServiceContainer {
   private readonly _duplicateDetectionService = new DuplicateDetectionService(this._leadRepository);
   private readonly _auditLogService = new AuditLogService(this._auditLogRepository);
   private readonly _activityService = new ActivityService(this._activityRepository);
-  private readonly _notificationService = new NotificationService(this._notificationRepository);
+  private readonly _notificationService = new NotificationService(this._notificationRepository, this._userRepository, this._auditLogRepository);
   private readonly _attachmentService = new AttachmentService(this._attachmentRepository, this._fileStorageService);
   private readonly _remarkService = new RemarkService(this._remarkRepository, this._leadRepository, this._activityRepository);
   private readonly _followUpService = new FollowUpService(this._followUpRepository, this._leadRepository, this._activityRepository, this._notificationRepository);

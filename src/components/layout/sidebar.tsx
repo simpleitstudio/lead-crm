@@ -26,6 +26,7 @@ export default function Sidebar() {
     { name: 'Leads', href: '/leads', icon: Layers, roles: ['ADMIN', 'SALES', 'LEAD_GENERATOR'] },
     { name: 'Follow-Ups', href: '/follow-ups', icon: PhoneCall, roles: ['ADMIN', 'SALES'] },
     { name: 'Notifications', href: '/notifications', icon: Bell, roles: ['ADMIN', 'SALES', 'LEAD_GENERATOR'] },
+    { name: 'Broadcast Center', href: '/admin/notifications', icon: Bell, roles: ['ADMIN'] },
     { name: 'User Management', href: '/users', icon: Users, roles: ['ADMIN'] },
     { name: 'Audit Logs', href: '/audit-logs', icon: FileText, roles: ['ADMIN'] },
     { name: 'Settings', href: '/settings', icon: Settings, roles: ['ADMIN', 'SALES', 'LEAD_GENERATOR'] },
@@ -68,27 +69,6 @@ export default function Sidebar() {
             );
           })}
         </nav>
-      </div>
-
-      {/* Footer Profile */}
-      <div className="border-t border-slate-800/60 pt-4">
-        <div className="flex items-center gap-3 mb-3 px-2">
-          <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-purple-600 to-pink-600 flex items-center justify-center font-bold text-white text-xs">
-            {user.firstName[0]}{user.lastName[0]}
-          </div>
-          <div className="truncate">
-            <h4 className="text-xs font-semibold text-white truncate">{user.fullName}</h4>
-            <span className="text-[10px] text-slate-400 font-bold bg-slate-800 px-1.5 py-0.5 rounded uppercase tracking-wider">{user.role}</span>
-          </div>
-        </div>
-
-        <button
-          onClick={logout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors duration-300"
-        >
-          <LogOut className="h-4 w-4" />
-          <span>Sign Out</span>
-        </button>
       </div>
     </aside>
   );

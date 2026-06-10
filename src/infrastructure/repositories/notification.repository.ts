@@ -1,6 +1,6 @@
 import { prisma } from '../database/prisma.client';
 import { NotificationEntity } from '../../domain/entities/notification.entity';
-import { NotificationType } from '../../domain/enums/notification-type.enum';
+import { NotificationPriority } from '../../domain/enums/notification-priority.enum';
 import { PaginatedResult, PaginationVo, createPaginatedResult } from '../../domain/value-objects/pagination.vo';
 import { INotificationRepository, CreateNotificationData } from '../../domain/interfaces/repositories/notification.repository.interface';
 
@@ -15,13 +15,13 @@ export class NotificationRepository implements INotificationRepository {
   public async findByUserId(userId: string, pagination: PaginationVo): Promise<PaginatedResult<NotificationEntity>> {
     const [items, total] = await Promise.all([
       prisma.notification.findMany({
-        where: { userId },
+        where: { recipientId: userId },
         skip: pagination.offset,
         take: pagination.limit,
         orderBy: { createdAt: 'desc' },
       }),
       prisma.notification.count({
-        where: { userId },
+        where: { recipientId: userId },
       }),
     ]);
 
@@ -34,7 +34,7 @@ export class NotificationRepository implements INotificationRepository {
 
   public async findUnreadByUserId(userId: string): Promise<NotificationEntity[]> {
     const notifications = await prisma.notification.findMany({
-      where: { userId, isRead: false },
+      where: { recipientId: userId, isRead: false },
       orderBy: { createdAt: 'desc' },
     });
     return notifications.map(item => NotificationEntity.fromPrisma(item));
@@ -43,12 +43,12 @@ export class NotificationRepository implements INotificationRepository {
   public async create(data: CreateNotificationData): Promise<NotificationEntity> {
     const notification = await prisma.notification.create({
       data: {
-        userId: data.userId,
-        type: data.type as any,
         title: data.title,
         message: data.message,
-        referenceId: data.referenceId ?? null,
-        referenceType: data.referenceType ?? null,
+        priority: data.priority,
+        recipientId: data.recipientId ?? null,
+        isGlobal: data.isGlobal ?? false,
+        createdById: data.createdById,
         isRead: false,
       },
     });
@@ -60,24 +60,23 @@ export class NotificationRepository implements INotificationRepository {
       where: { id },
       data: {
         isRead: true,
-        readAt: new Date(),
       },
     });
   }
 
   public async markAllAsRead(userId: string): Promise<void> {
     await prisma.notification.updateMany({
-      where: { userId, isRead: false },
+      where: { recipientId: userId, isRead: false },
       data: {
         isRead: true,
-        readAt: new Date(),
       },
     });
   }
 
   public async countUnread(userId: string): Promise<number> {
     return prisma.notification.count({
-      where: { userId, isRead: false },
+      where: { recipientId: userId, isRead: false },
     });
   }
 }
+

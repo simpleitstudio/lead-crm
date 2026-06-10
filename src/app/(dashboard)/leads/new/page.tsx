@@ -30,9 +30,13 @@ export default function NewLeadPage() {
   const [instagramUrl, setInstagramUrl] = useState('');
   const [industry, setIndustry] = useState('');
   const [businessCategory, setBusinessCategory] = useState('');
-  const [employeeCount, setEmployeeCount] = useState('');
-  const [estimatedRevenue, setEstimatedRevenue] = useState('');
   const [existingSoftwareStack, setExistingSoftwareStack] = useState('');
+  const [servicesInterestedIn, setServicesInterestedIn] = useState('');
+  const [currentBusinessProblem, setCurrentBusinessProblem] = useState('');
+  const [estimatedBudget, setEstimatedBudget] = useState('');
+  const [internalNotes, setInternalNotes] = useState('');
+  const [preferredContactPlatform, setPreferredContactPlatform] = useState('');
+  const [customContactPlatform, setCustomContactPlatform] = useState('');
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
@@ -120,9 +124,13 @@ export default function NewLeadPage() {
         instagramUrl: instagramUrl || undefined,
         industry: industry || undefined,
         businessCategory: businessCategory || undefined,
-        employeeCount: employeeCount || undefined,
-        estimatedRevenue: estimatedRevenue || undefined,
         existingSoftwareStack: existingSoftwareStack || undefined,
+        servicesInterestedIn: servicesInterestedIn || undefined,
+        currentBusinessProblem: currentBusinessProblem || undefined,
+        estimatedBudget: estimatedBudget || undefined,
+        internalNotes: user?.role !== 'LEAD_GENERATOR' ? (internalNotes || undefined) : undefined,
+        preferredContactPlatform: preferredContactPlatform || undefined,
+        customContactPlatform: preferredContactPlatform === 'Other' ? (customContactPlatform || undefined) : undefined,
         city: city || undefined,
         state: state || undefined,
         country: country || undefined,
@@ -153,7 +161,7 @@ export default function NewLeadPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-[1400px] w-full mx-auto px-4">
       {/* Back button */}
       <div>
         <Link href="/leads" className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors">
@@ -271,6 +279,40 @@ export default function NewLeadPage() {
                 placeholder="+1 650-253-1111"
               />
             </div>
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                Preferred Communication Platform
+              </label>
+              <select
+                value={preferredContactPlatform}
+                onChange={(e) => setPreferredContactPlatform(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all cursor-pointer"
+              >
+                <option value="">Select Platform</option>
+                <option value="Phone">Phone</option>
+                <option value="Email">Email</option>
+                <option value="Instagram">Instagram</option>
+                <option value="Twitter">Twitter</option>
+                <option value="Telegram">Telegram</option>
+                <option value="Discord">Discord</option>
+                <option value="LinkedIn">LinkedIn</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            {preferredContactPlatform === 'Other' && (
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                  Custom Platform
+                </label>
+                <input
+                  type="text"
+                  value={customContactPlatform}
+                  onChange={(e) => setCustomContactPlatform(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all"
+                  placeholder="e.g. Facebook, Slack, Signal"
+                />
+              </div>
+            )}
           </div>
         </div>
 
@@ -317,7 +359,7 @@ export default function NewLeadPage() {
           </div>
         </div>
 
-        {/* Section 3: Business Details */}
+        {/* Section 3: Business Details & Pain Points */}
         <div className="glass-card rounded-3xl p-6 space-y-4">
           <h3 className="text-sm font-bold text-white mb-2">Business Information</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -345,30 +387,6 @@ export default function NewLeadPage() {
                 placeholder="SaaS / Search Engine"
               />
             </div>
-            <div>
-              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
-                Employee Count
-              </label>
-              <input
-                type="text"
-                value={employeeCount}
-                onChange={(e) => setEmployeeCount(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all"
-                placeholder="10,000+"
-              />
-            </div>
-            <div>
-              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
-                Estimated Revenue
-              </label>
-              <input
-                type="text"
-                value={estimatedRevenue}
-                onChange={(e) => setEstimatedRevenue(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all"
-                placeholder="$100M+"
-              />
-            </div>
             <div className="md:col-span-2">
               <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
                 Existing Software Stack
@@ -380,6 +398,55 @@ export default function NewLeadPage() {
                 placeholder="React, Next.js, GCP, Salesforce..."
               />
             </div>
+            <div className="md:col-span-2">
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                Services Interested In
+              </label>
+              <textarea
+                value={servicesInterestedIn}
+                onChange={(e) => setServicesInterestedIn(e.target.value)}
+                maxLength={500}
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all h-20 resize-none"
+                placeholder="Website Development, Mobile App, AI Automation, AI Chatbot, CRM Development..."
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                Current Business Problem
+              </label>
+              <textarea
+                value={currentBusinessProblem}
+                onChange={(e) => setCurrentBusinessProblem(e.target.value)}
+                maxLength={2000}
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all h-24 resize-none"
+                placeholder="Still taking orders manually. No customer management. No online presence. No automation..."
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                Estimated Budget
+              </label>
+              <input
+                type="text"
+                value={estimatedBudget}
+                onChange={(e) => setEstimatedBudget(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all"
+                placeholder="50k, 1L, 2L-5L, Unknown"
+              />
+            </div>
+            {user?.role !== 'LEAD_GENERATOR' && (
+              <div className="md:col-span-2">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                  Internal Notes
+                </label>
+                <textarea
+                  value={internalNotes}
+                  onChange={(e) => setInternalNotes(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all h-24 resize-none"
+                  placeholder="Owner prefers WhatsApp. Call after 7 PM. Seems interested in SaaS..."
+                />
+              </div>
+            )}
           </div>
         </div>
 
@@ -509,3 +576,4 @@ export default function NewLeadPage() {
     </div>
   );
 }
+

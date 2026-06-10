@@ -91,6 +91,13 @@ enum NotificationType {
   LEAD_REASSIGNED
 }
 
+enum NotificationPriority {
+  INFO
+  SUCCESS
+  WARNING
+  URGENT
+}
+
 enum AuditActionType {
   USER_CREATED
   USER_UPDATED
@@ -119,6 +126,13 @@ enum AuditActionType {
   TAG_CREATED
   TAG_DELETED
   SETTINGS_UPDATED
+  SERVICE_INTEREST_UPDATED
+  BUDGET_UPDATED
+  INTERNAL_NOTES_UPDATED
+  NOTIFICATION_SENT
+  GLOBAL_NOTIFICATION_SENT
+  NOTIFICATION_READ
+  ALL_NOTIFICATIONS_READ
 }
 
 enum ImportStatus {
@@ -186,9 +200,13 @@ model Lead {
   // Business Info
   industry              String?      @db.VarChar(150)
   businessCategory      String?      @map("business_category") @db.VarChar(150)
-  employeeCount         String?      @map("employee_count") @db.VarChar(50)
-  estimatedRevenue      String?      @map("estimated_revenue") @db.VarChar(100)
   existingSoftwareStack String?      @map("existing_software_stack") @db.Text
+  servicesInterestedIn  String?      @map("services_interested_in") @db.VarChar(500)
+  currentBusinessProblem String?     @map("current_business_problem") @db.VarChar(2000)
+  estimatedBudget       String?      @map("estimated_budget") @db.VarChar(255)
+  internalNotes         String?      @map("internal_notes") @db.Text
+  preferredContactPlatform String?  @map("preferred_contact_platform") @db.VarChar(100)
+  customContactPlatform String?     @map("custom_contact_platform") @db.VarChar(255)
 
   // Location
   city                  String?      @db.VarChar(100)
@@ -340,20 +358,19 @@ model Attachment {
 }
 
 model Notification {
-  id            String           @id @default(uuid()) @db.Uuid
-  userId        String           @map("user_id") @db.Uuid
-  user          User             @relation(fields: [userId], references: [id])
-  type          NotificationType
-  title         String           @db.VarChar(255)
-  message       String           @db.Text
-  referenceId   String?          @map("reference_id") @db.Uuid
-  referenceType String?          @map("reference_type") @db.VarChar(50)
-  isRead        Boolean          @default(false) @map("is_read")
-  readAt        DateTime?        @map("read_at")
-  createdAt     DateTime         @default(now()) @map("created_at")
+  id          String               @id @default(cuid())
+  title       String
+  message     String
+  priority    NotificationPriority
+  recipientId String?              @map("recipient_id") @db.Uuid
+  recipient   User?                @relation(fields: [recipientId], references: [id])
+  isGlobal    Boolean              @default(false) @map("is_global")
+  isRead      Boolean              @default(false) @map("is_read")
+  createdById String               @map("created_by_id") @db.Uuid
+  createdAt   DateTime             @default(now()) @map("created_at")
 
-  @@index([userId])
-  @@index([userId, isRead])
+  @@index([recipientId])
+  @@index([recipientId, isRead])
   @@index([createdAt])
   @@map("notifications")
 }

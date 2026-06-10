@@ -26,6 +26,13 @@ export enum AuditActionType {
   TAG_CREATED = 'TAG_CREATED',
   TAG_DELETED = 'TAG_DELETED',
   SETTINGS_UPDATED = 'SETTINGS_UPDATED',
+  SERVICE_INTEREST_UPDATED = 'SERVICE_INTEREST_UPDATED',
+  BUDGET_UPDATED = 'BUDGET_UPDATED',
+  INTERNAL_NOTES_UPDATED = 'INTERNAL_NOTES_UPDATED',
+  NOTIFICATION_SENT = 'NOTIFICATION_SENT',
+  GLOBAL_NOTIFICATION_SENT = 'GLOBAL_NOTIFICATION_SENT',
+  NOTIFICATION_READ = 'NOTIFICATION_READ',
+  ALL_NOTIFICATIONS_READ = 'ALL_NOTIFICATIONS_READ',
 }
 
 export const AuditActionTypeLabels: Record<AuditActionType, string> = {
@@ -56,4 +63,11 @@ export const AuditActionTypeLabels: Record<AuditActionType, string> = {
   [AuditActionType.TAG_CREATED]: 'Tag Created',
   [AuditActionType.TAG_DELETED]: 'Tag Deleted',
   [AuditActionType.SETTINGS_UPDATED]: 'Settings Updated',
+  [AuditActionType.SERVICE_INTEREST_UPDATED]: 'Service Interest Updated',
+  [AuditActionType.BUDGET_UPDATED]: 'Budget Updated',
+  [AuditActionType.INTERNAL_NOTES_UPDATED]: 'Internal Notes Updated',
+  [AuditActionType.NOTIFICATION_SENT]: 'Notification Sent',
+  [AuditActionType.GLOBAL_NOTIFICATION_SENT]: 'Global Notification Sent',
+  [AuditActionType.NOTIFICATION_READ]: 'Notification Read',
+  [AuditActionType.ALL_NOTIFICATIONS_READ]: 'All Notifications Read',
 };

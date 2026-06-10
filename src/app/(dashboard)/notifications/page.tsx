@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useNotifications } from '../../../hooks/use-notifications';
-import { Bell, Check, Trash2, Calendar, MessageSquare, AlertCircle, AlertTriangle } from 'lucide-react';
+import { Bell, Check, Calendar, MessageSquare, AlertCircle, AlertTriangle } from 'lucide-react';
 
 export default function NotificationsPage() {
   const { notifications: unreadList, unreadCount, markAsRead, markAllAsRead, refresh } = useNotifications();
@@ -39,18 +39,19 @@ export default function NotificationsPage() {
     loadAllNotifications();
   };
 
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case 'LEAD_ASSIGNED': return <Bell className="h-4 w-4 text-indigo-400" />;
-      case 'FOLLOWUP_DUE': return <Calendar className="h-4 w-4 text-amber-400" />;
-      case 'FOLLOWUP_OVERDUE': return <AlertTriangle className="h-4 w-4 text-rose-400 animate-bounce" />;
-      default: return <MessageSquare className="h-4 w-4 text-slate-400" />;
+  const getNotificationIcon = (priority: string) => {
+    switch (priority) {
+      case 'URGENT': return <AlertTriangle className="h-4 w-4 text-rose-400 animate-pulse" />;
+      case 'WARNING': return <AlertCircle className="h-4 w-4 text-amber-400" />;
+      case 'SUCCESS': return <Check className="h-4 w-4 text-emerald-400" />;
+      case 'INFO':
+      default: return <Bell className="h-4 w-4 text-indigo-400" />;
     }
   };
 
   if (loading) {
     return (
-      <div className="space-y-6 animate-pulse">
+      <div className="space-y-6 animate-pulse max-w-4xl mx-auto">
         <div className="h-10 w-48 bg-slate-800 rounded-lg"></div>
         <div className="h-48 bg-slate-900/60 rounded-3xl"></div>
       </div>
@@ -63,7 +64,7 @@ export default function NotificationsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-extrabold text-white tracking-tight">Notifications</h1>
-          <p className="text-sm text-slate-400 mt-1">Stay informed of outreach assignments and follow-up deadlines.</p>
+          <p className="text-sm text-slate-400 mt-1">Stay informed of outreach assignments and system announcements.</p>
         </div>
 
         {unreadCount > 0 && (
@@ -112,15 +113,30 @@ export default function NotificationsPage() {
           >
             {/* Icon status */}
             <div className="h-9 w-9 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center shrink-0 mt-0.5">
-              {getNotificationIcon(n.type)}
+              {getNotificationIcon(n.priority)}
             </div>
 
             {/* Content */}
             <div className="flex-1 space-y-1">
               <div className="flex justify-between items-start gap-4">
-                <h4 className={`text-sm font-semibold text-white ${!n.isRead ? 'text-indigo-300' : ''}`}>
-                  {n.title}
-                </h4>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h4 className={`text-sm font-semibold text-white ${!n.isRead ? 'text-indigo-300' : ''}`}>
+                    {n.title}
+                  </h4>
+                  <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase ${
+                    n.priority === 'URGENT' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' :
+                    n.priority === 'WARNING' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
+                    n.priority === 'SUCCESS' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                    'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
+                  }`}>
+                    {n.priority}
+                  </span>
+                  {n.isGlobal && (
+                    <span className="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase bg-slate-800 text-slate-400 border border-slate-700/30">
+                      Global
+                    </span>
+                  )}
+                </div>
                 <span className="text-[10px] text-slate-500 font-medium">
                   {new Date(n.createdAt).toLocaleString()}
                 </span>
@@ -128,14 +144,6 @@ export default function NotificationsPage() {
               <p className="text-xs text-slate-400 leading-relaxed font-medium">{n.message}</p>
               
               <div className="flex gap-4 items-center pt-2">
-                {n.referenceId && n.referenceType === 'Lead' && (
-                  <Link 
-                    href={`/leads/${n.referenceId}`}
-                    className="text-[10px] font-bold text-indigo-400 hover:underline"
-                  >
-                    Open Associated Lead Profile
-                  </Link>
-                )}
                 {!n.isRead && (
                   <button
                     onClick={() => handleMarkRead(n.id)}
@@ -161,3 +169,4 @@ export default function NotificationsPage() {
     </div>
   );
 }
+
