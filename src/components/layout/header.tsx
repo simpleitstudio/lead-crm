@@ -18,7 +18,7 @@ export default function Header() {
         <button className="md:hidden p-1 rounded hover:bg-slate-800 text-slate-400 hover:text-white">
           <Menu className="h-5 w-5" />
         </button>
-        <span className="text-sm font-medium text-slate-400">Simple-IT Studio CRM Workspace</span>
+        <span className="text-sm font-medium text-slate-400">Simple-it Studio CRM Workspace</span>
       </div>
 
       <div className="flex items-center gap-6">
@@ -32,7 +32,7 @@ export default function Header() {
               </span>
             )}
           </Link>
-          
+
           {/* Quick Notification Dropdown (Hover reveal) */}
           {notifications.length > 0 && (
             <div className="absolute right-0 mt-2 w-80 glass-card rounded-2xl overflow-hidden opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto transition-all duration-300 origin-top-right z-50">
