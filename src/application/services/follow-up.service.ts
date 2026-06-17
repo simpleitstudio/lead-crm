@@ -130,4 +130,22 @@ export class FollowUpService implements IFollowUpService {
   public async getUpcomingFollowUps(userId?: string, pagination?: PaginationVo): Promise<PaginatedResult<FollowUpEntity>> {
     return this.followUpRepository.findUpcoming(userId, pagination);
   }
+
+  public async getFollowUpsByLead(
+    leadId: string,
+    pagination: PaginationVo,
+    performerId: string,
+    performerRole: UserRole
+  ): Promise<PaginatedResult<FollowUpEntity>> {
+    const lead = await this.leadRepository.findById(leadId);
+    if (!lead) {
+      throw new NotFoundException('Lead not found');
+    }
+
+    if (performerRole !== UserRole.ADMIN && lead.assignedToId !== performerId && lead.createdById !== performerId) {
+      throw new ForbiddenException('You do not have permission to view this lead\'s follow-ups');
+    }
+
+    return this.followUpRepository.findByLeadId(leadId, pagination);
+  }
 }

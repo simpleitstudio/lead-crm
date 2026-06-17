@@ -8,14 +8,21 @@ import { FollowUpStatus } from '../../../domain/enums/follow-up-status.enum';
 export const GET = withErrorHandling(
   withAuth(async (req: AuthenticatedRequest) => {
     const { searchParams } = req.nextUrl;
-    const userId = searchParams.get('userId') || req.user.id;
-    const status = (searchParams.get('status') as FollowUpStatus) || undefined;
+    const leadId = searchParams.get('leadId');
     
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '20', 10);
     const pagination = new PaginationVo(page, limit);
 
     const followUpService = container.getFollowUpService();
+
+    if (leadId) {
+      const result = await followUpService.getFollowUpsByLead(leadId, pagination, req.user.id, req.user.role);
+      return NextResponse.json(result);
+    }
+
+    const userId = searchParams.get('userId') || req.user.id;
+    const status = (searchParams.get('status') as FollowUpStatus) || undefined;
     const result = await followUpService.getFollowUpsForUser(userId, status, pagination);
 
     return NextResponse.json(result);

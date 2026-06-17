@@ -20,6 +20,8 @@ export interface PaginatedResult<T> {
     hasNextPage: boolean;
     hasPreviousPage: boolean;
   };
+  items: T[];
+  totalCount: number;
 }
 
 export function createPaginatedResult<T>(
@@ -38,5 +40,7 @@ export function createPaginatedResult<T>(
       hasNextPage: pagination.page < totalPages,
       hasPreviousPage: pagination.page > 1,
     },
+    items: data,
+    totalCount: total,
   };
 }

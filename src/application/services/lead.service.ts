@@ -68,19 +68,14 @@ export class LeadService implements ILeadService {
 
     const oldLead = JSON.parse(JSON.stringify(lead));
 
-    if (data.status && data.status !== lead.status) {
+    const statusChanged = data.status && data.status !== lead.status;
+    if (statusChanged) {
       const isAdmin = performerRole === UserRole.ADMIN;
-      lead.transitionTo(data.status, isAdmin);
-
-      await this.activityRepository.create({
-        leadId: lead.id,
-        userId: performerId,
-        actionType: ActionType.STATUS_CHANGED,
-        description: `Status changed from "${oldLead.status}" to "${data.status}"`,
-      });
+      lead.transitionTo(data.status!, isAdmin);
     }
 
-    if (data.assignedToId !== undefined && data.assignedToId !== lead.assignedToId) {
+    const assignedToIdChanged = data.assignedToId !== undefined && data.assignedToId !== lead.assignedToId;
+    if (assignedToIdChanged) {
       if (performerRole !== UserRole.ADMIN) {
         throw new ForbiddenException('Only administrators can assign leads');
       }
@@ -94,8 +89,43 @@ export class LeadService implements ILeadService {
 
     const updated = await this.leadRepository.update(id, {
       ...data,
+      status: lead.status,
+      assignedToId: lead.assignedToId,
+      assignedAt: lead.assignedAt,
       updatedById: performerId,
     });
+
+    if (statusChanged) {
+      await this.activityRepository.create({
+        leadId: lead.id,
+        userId: performerId,
+        actionType: ActionType.STATUS_CHANGED,
+        description: `Status changed from "${oldLead.status}" to "${lead.status}"`,
+      });
+    }
+
+    if (assignedToIdChanged) {
+      await this.activityRepository.create({
+        leadId: lead.id,
+        userId: performerId,
+        actionType: ActionType.LEAD_ASSIGNED,
+        description: lead.assignedToId ? `Lead assigned to salesperson` : `Lead unassigned`,
+      });
+
+      if (lead.assignedToId) {
+        const assignee = await this.userRepository.findById(lead.assignedToId);
+        if (assignee) {
+          await this.notificationRepository.create({
+            title: 'New Lead Assigned',
+            message: `Lead "${lead.companyName}" has been assigned to you.`,
+            priority: NotificationPriority.INFO,
+            recipientId: lead.assignedToId,
+            isGlobal: false,
+            createdById: performerId,
+          });
+        }
+      }
+    }
 
     const performer = await this.userRepository.findById(performerId);
     if (performer) {
@@ -111,7 +141,24 @@ export class LeadService implements ILeadService {
         newValue: JSON.parse(JSON.stringify(updated)),
       });
 
-      // 2. Log granular updates if specific fields changed
+      // 2. Log assignment audit log
+      if (assignedToIdChanged) {
+        const auditAction = lead.assignedToId
+          ? (oldLead.assignedToId ? AuditActionType.LEAD_REASSIGNED : AuditActionType.LEAD_ASSIGNED)
+          : AuditActionType.LEAD_ASSIGNED;
+        await this.auditLogRepository.create({
+          userId: performerId,
+          userName: performer.fullName,
+          userRole: performer.role,
+          actionType: auditAction,
+          entityType: 'Lead',
+          entityId: lead.id,
+          previousValue: oldLead.assignedToId ? { assignedToId: oldLead.assignedToId } : undefined,
+          newValue: lead.assignedToId ? { assignedToId: lead.assignedToId } : undefined,
+        });
+      }
+
+      // 3. Log granular updates if specific fields changed
       if (data.servicesInterestedIn !== undefined && data.servicesInterestedIn !== oldLead.servicesInterestedIn) {
         await this.auditLogRepository.create({
           userId: performerId,

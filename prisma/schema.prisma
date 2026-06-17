@@ -121,6 +121,9 @@ enum AuditActionType {
   FOLLOWUP_CANCELLED
   FILE_UPLOADED
   FILE_DELETED
+  FILE_DOWNLOADED
+  FILE_UPLOAD_FAILED
+  FILE_DELETE_FAILED
   EXPORT_GENERATED
   IMPORT_COMPLETED
   TAG_CREATED
@@ -385,7 +388,7 @@ model AuditLog {
   userAgent     String?         @map("user_agent") @db.Text
   actionType    AuditActionType @map("action_type")
   entityType    String          @map("entity_type") @db.VarChar(50)
-  entityId      String?         @map("entity_id") @db.Uuid
+  entityId      String?         @map("entity_id") @db.VarChar(255)
   previousValue Json?           @map("previous_value") @db.JsonB
   newValue      Json?           @map("new_value") @db.JsonB
   createdAt     DateTime        @default(now()) @map("created_at")
