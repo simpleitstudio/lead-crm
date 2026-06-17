@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../hooks/use-auth';
-import { 
-  Users, 
-  ShieldAlert, 
-  ToggleLeft, 
-  ToggleRight, 
+import {
+  Users,
+  ShieldAlert,
+  ToggleLeft,
+  ToggleRight,
   UserPlus,
-  Lock 
+  Lock
 } from 'lucide-react';
 
 interface UserItem {
@@ -35,7 +35,7 @@ export default function UsersPage() {
   const [lastName, setLastName] = useState('');
   const [role, setRole] = useState<'ADMIN' | 'SALES' | 'LEAD_GENERATOR'>('SALES');
   const [phone, setPhone] = useState('');
-  
+
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [formSuccess, setFormSuccess] = useState(false);
@@ -281,7 +281,7 @@ export default function UsersPage() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white"
-                placeholder="+1 555-0100"
+                placeholder="+91 878 989 8706"
               />
             </div>
 

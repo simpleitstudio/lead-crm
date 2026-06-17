@@ -214,7 +214,7 @@ export default function NewLeadPage() {
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all"
-                placeholder="Google Inc."
+                placeholder="Simple-it Studio"
                 required
               />
             </div>
@@ -227,7 +227,7 @@ export default function NewLeadPage() {
                 value={contactPerson}
                 onChange={(e) => setContactPerson(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all"
-                placeholder="Sundar Pichai"
+                placeholder="Shakil Ahmad"
                 required
               />
             </div>
@@ -252,7 +252,7 @@ export default function NewLeadPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all"
-                placeholder="sundar@google.com"
+                placeholder="learnershakil@gmail.com"
               />
             </div>
             <div>
@@ -264,7 +264,7 @@ export default function NewLeadPage() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all"
-                placeholder="+1 650-253-0000"
+                placeholder="+91 97093 58602"
               />
             </div>
             <div>
@@ -276,7 +276,7 @@ export default function NewLeadPage() {
                 value={alternatePhone}
                 onChange={(e) => setAlternatePhone(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all"
-                placeholder="+1 650-253-1111"
+                placeholder="+91 878 989 8706"
               />
             </div>
             <div>
@@ -329,7 +329,7 @@ export default function NewLeadPage() {
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all"
-                placeholder="https://google.com"
+                placeholder="https://simpleitstudio.com"
               />
             </div>
             <div>
@@ -341,7 +341,7 @@ export default function NewLeadPage() {
                 value={linkedinUrl}
                 onChange={(e) => setLinkedinUrl(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all"
-                placeholder="https://linkedin.com/company/google"
+                placeholder="https://linkedin.com/company/simpleitstudio"
               />
             </div>
             <div>
@@ -353,7 +353,7 @@ export default function NewLeadPage() {
                 value={instagramUrl}
                 onChange={(e) => setInstagramUrl(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all"
-                placeholder="https://instagram.com/google"
+                placeholder="https://instagram.com/simpleitstudio"
               />
             </div>
           </div>
@@ -463,7 +463,7 @@ export default function NewLeadPage() {
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all"
-                placeholder="Mountain View"
+                placeholder="New Delhi"
               />
             </div>
             <div>
@@ -475,7 +475,7 @@ export default function NewLeadPage() {
                 value={state}
                 onChange={(e) => setState(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all"
-                placeholder="California"
+                placeholder="Delhi"
               />
             </div>
             <div>
@@ -487,7 +487,7 @@ export default function NewLeadPage() {
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all"
-                placeholder="United States"
+                placeholder="India"
               />
             </div>
           </div>

@@ -104,11 +104,6 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-8 pt-6 border-t border-slate-800/60 text-center">
-          <p className="text-xs text-slate-500">
-            For testing: <span className="font-semibold text-slate-400">admin@crm.com</span> / <span className="font-semibold text-slate-400">AdminPassword123</span>
-          </p>
-        </div>
       </div>
     </div>
   );
