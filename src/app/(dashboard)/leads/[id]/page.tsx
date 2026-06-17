@@ -489,7 +489,7 @@ export default function LeadDetailPage() {
       {/* Grid: 2/3 and 1/3 columns */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Left 2/3 Column: Info, Remarks, Attachments */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-6 min-w-0">
           {/* Detail card */}
           <div className="glass-card rounded-3xl p-6">
             <h3 className="text-sm font-bold text-white mb-6">Lead Specifications</h3>
@@ -538,29 +538,29 @@ export default function LeadDetailPage() {
                   {[lead.city, lead.state, lead.country].filter(Boolean).join(', ') || 'N/A'}
                 </span>
               </div>
-              <div className="md:col-span-2 space-y-1.5 pt-2">
+              <div className="md:col-span-2 space-y-1.5 pt-2 min-w-0">
                 <span className="text-slate-400 block font-semibold text-indigo-400">Services Interested In</span>
-                <p className="p-3 bg-slate-900/60 rounded-xl border border-slate-800/80 text-xs text-slate-300 leading-relaxed min-h-[50px] whitespace-pre-wrap">
+                <p className="p-3 bg-slate-900/60 rounded-xl border border-slate-800/80 text-xs text-slate-300 leading-relaxed min-h-[50px] whitespace-pre-wrap break-words">
                   {lead.servicesInterestedIn || 'No services interest specified.'}
                 </p>
               </div>
-              <div className="md:col-span-2 space-y-1.5 pt-2">
+              <div className="md:col-span-2 space-y-1.5 pt-2 min-w-0">
                 <span className="text-slate-400 block font-semibold text-indigo-400">Current Business Problem</span>
-                <p className="p-3 bg-slate-900/60 rounded-xl border border-slate-800/80 text-xs text-slate-300 leading-relaxed min-h-[50px] whitespace-pre-wrap">
+                <p className="p-3 bg-slate-900/60 rounded-xl border border-slate-800/80 text-xs text-slate-300 leading-relaxed min-h-[50px] whitespace-pre-wrap break-words">
                   {lead.currentBusinessProblem || 'No business problems recorded.'}
                 </p>
               </div>
-              <div className="md:col-span-2 space-y-1.5 pt-2">
+              <div className="md:col-span-2 space-y-1.5 pt-2 min-w-0">
                 <span className="text-slate-400 block">Existing Software Stack</span>
-                <p className="p-3 bg-slate-900/60 rounded-xl border border-slate-800/80 font-mono text-[10px] text-slate-300 leading-relaxed min-h-[50px] whitespace-pre-wrap">
+                <p className="p-3 bg-slate-900/60 rounded-xl border border-slate-800/80 font-mono text-[10px] text-slate-300 leading-relaxed min-h-[50px] whitespace-pre-wrap break-words">
                   {lead.existingSoftwareStack || 'No software stack notes recorded.'}
                 </p>
               </div>
               {/* Only show internal notes for authorized roles (ADMIN and Sales rep assigned to the lead) */}
               {(user?.role === 'ADMIN' || lead.assignedToId === user?.id) && (
-                <div className="md:col-span-2 space-y-1.5 pt-2">
+                <div className="md:col-span-2 space-y-1.5 pt-2 min-w-0">
                   <span className="text-slate-400 block font-semibold text-amber-400">Internal Notes</span>
-                  <p className="p-3 bg-amber-950/20 rounded-xl border border-amber-900/30 text-xs text-slate-300 leading-relaxed min-h-[50px] whitespace-pre-wrap">
+                  <p className="p-3 bg-amber-950/20 rounded-xl border border-amber-900/30 text-xs text-slate-300 leading-relaxed min-h-[50px] whitespace-pre-wrap break-words">
                     {lead.internalNotes || 'No internal notes recorded.'}
                   </p>
                 </div>
@@ -662,7 +662,7 @@ export default function LeadDetailPage() {
                         </div>
                       </div>
                     ) : (
-                      <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">{remark.content}</p>
+                      <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-wrap break-words">{remark.content}</p>
                     )}
 
                     {!editingRemarkId && (isAuthor || user?.role === 'ADMIN') && (
